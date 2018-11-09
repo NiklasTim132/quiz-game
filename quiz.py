@@ -35,7 +35,7 @@ pygame.init()
 size = [500, 700]
 screen = pygame.display.set_mode(size)
 
-pygame.display.set_caption("My Game")
+pygame.display.set_caption("Quiz-Game v.1.0")
 
 #Loop until the user clicks the close button.
 done = False
@@ -78,7 +78,7 @@ antwort[2] = ["Bonjour", "bienvenuti", "Grüss Gott", "bon soir"]
 antwort[3] = ["15€", "30€", "45€", "5€", "150€"]
 antwort[4] = ["Nur in einem rechtwinkeligen Dreieck", "In jedem Dreieck", "Nur bei gleichschenkeligen Dreiecken", "Der Lehrsatz ist garnicht existent"]
 antwort[5] = ["365 Tage", "563 Tage", "635 Tage", "536 Tage", "653 Tage"]
-antwort[6] = ["Wenn keine Figur sich mehr bewegen kann, aber der König nicht im Schach steht und alle Ausweichfelder blockiert sind", "
+antwort[6] = ["Wenn keine Figur sich mehr bewegen kann, aber der König nicht im Schach steht und alle Ausweichfelder blockiert sind"]
 antwort[7] = ["+44","+55","+66","+43"]
 antwort[8] = ["Es kommentiert einen Befehl vorrübergehend aus","Es stoppt das Skript komplett","Es macht nichts","Es wird nicht in Python sondern in HTML verwendet"]
 antwort[9] = ["Zahlungen","Das Ausleihen von Büchern","Programmen","Anrufe"]
@@ -86,7 +86,7 @@ antwort[10] = ["WASD", "Pfeiltasten","HIJK","OLKÖ"]
 antwort[11] = ["4 Wörtern", "8 Wörtern", "12 Wörtern", "16 Wörtern"]
 antwort[12] = ["William Shakespear", "Walter Shakespear", "Werner Shakespear", "Willhelm Shakespear"]
 antwort[13] = ["Fett", "Kursiv", "Unterstrichen", "Durchgestrichen"]
-antwort[14] = ["
+antwort[14] = []
 
 # -------- Main Program Loop -----------
 while done==False:
