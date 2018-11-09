@@ -54,7 +54,7 @@ class Game():
 class TextPrint():
     def __init__(self):
         self.reset()
-        self.font = pygame.font.Font(None, 20)
+        self.font = pygame.font.Font(None, 35)
 
     def print(self, screen, textString):
         textBitmap = self.font.render(textString, True, BLACK)
@@ -62,9 +62,9 @@ class TextPrint():
         self.y += self.line_height
         
     def reset(self):
-        self.x = 10
-        self.y = 10
-        self.line_height = 15
+        self.x = 50
+        self.y = 50
+        self.line_height = 50
         
     def indent(self):
         self.x += 10
@@ -73,7 +73,7 @@ class TextPrint():
         self.x -= 10
 
 class PygView():
-    def __init__(self,xres=400,yres=600):
+    def __init__(self,xres=3000,yres=800):
         PygView.xres=xres
         PygView.yres=yres
 
@@ -156,12 +156,14 @@ class PygView():
                 # wir wollen button0
                 for i in range( self.buttons ):
                     self.button = self.joystick.get_button( i )
-                    if j==0 and i==0 and self.button==1:
+                    if j==0 and i in (0,1,2,3) and self.button==1:
                         #joystick 0, button 0 wurde gedruckt
                         self.textPrint.print(self.screen, "{}".format(Game.anweisung1))
-                    if j==1 and i==0 and self.button==1:
+                        self.textPrint.print(self.screen, "Es wurde der Button {} gedrückt!".format(i))
+                    if j==1 and i in (0,1,2,3) and self.button ==1:
                         #joystick 1, button 0 wurde gedruckt
                         self.textPrint.print(self.screen, "{}".format(Game.anweisung2))
+                        self.textPrint.print(self.screen, "Es wurde der Button {} gedrückt!".format(i))
                     #textPrint.print(screen, "Button {:>2} value: {}".format(i,button) )
                 #textPrint.unindent()
                     
