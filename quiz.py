@@ -106,7 +106,9 @@ class PygView():
             for event in pygame.event.get():  # User did something
                 if event.type == pygame.QUIT: # If user clicked close
                     self.gameover=True        # Flag that we are done so we exit this loop
-                
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        self.gameover = True
                 # Possible joystick actions: JOYAXISMOTION JOYBALLMOTION JOYBUTTONDOWN JOYBUTTONUP JOYHATMOTION
                 if event.type == pygame.JOYBUTTONDOWN:
                     print("Joystick button pressed.")
@@ -156,16 +158,10 @@ class PygView():
                 # wir wollen button0
                 for i in range( self.buttons ):
                     self.button = self.joystick.get_button( i )
-                    if j==0 and i in (0,1,2,3) and self.button==1:
-                        #joystick 0, button 0 wurde gedruckt
-                        self.textPrint.print(self.screen, "{}".format(Game.anweisung1))
-                        self.textPrint.print(self.screen, "Es wurde der Button {} gedrückt!".format(i))
-                    if j==1 and i in (0,1,2,3) and self.button ==1:
-                        #joystick 1, button 0 wurde gedruckt
-                        self.textPrint.print(self.screen, "{}".format(Game.anweisung2))
-                        self.textPrint.print(self.screen, "Es wurde der Button {} gedrückt!".format(i))
-                    #textPrint.print(screen, "Button {:>2} value: {}".format(i,button) )
-                #textPrint.unindent()
+                    for joynr, anweisnr in ((0,Game.anweisung1), (1, Game.anweisung2)):                     
+                        if j==joynr and i in (0,1,2,3) and self.button==1:
+                            self.textPrint.print(self.screen, "{}".format(anweisnr))
+                            #self.textPrint.print(self.screen, "Es wurde der Button {} gedrückt!".format(i))
                     
                 # Hat switch. All or nothing for direction, not like joysticks.
                 # Value comes back in an array.
