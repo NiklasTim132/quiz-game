@@ -1,4 +1,5 @@
 import pygame
+import random
 
 # Define some colors
 BLACK    = (   0,   0,   0)
@@ -29,9 +30,9 @@ class Game():
         frage[10]= "Mit welchen vier Standard Tasten lässt sich der PC-Charakter in Minecraft steuern?"
         frage[11]= "Aus wie vielen Worten besteht dass Götz Zitat?"
         frage[12]= "'Romeo und Julia' ist ein Stück von...?"
-        frage[13]= "In der Programmiersprache 'HTML' steht dieses Zeichen '<b>...</b> für welche Textformatierung?"
-        frage[14]= "Ein Titel der EAV lautet...?"
-        frage[15]= "Als 'Bug' wird in der IT-Sprache was bezeichnet?"
+        frage[13]= "In der Programmiersprache 'HTML' steht dieses Zeichen '<b>...</b>' für welche Textformatierung?"
+        #frage[14]= "Ein Titel der EAV lautet...?"
+        #frage[15]= "Als 'Bug' wird in der IT-Sprache was bezeichnet?"
 
 
         antwort = {}
@@ -49,7 +50,7 @@ class Game():
         antwort[11] = ["4 Wörtern", "8 Wörtern", "12 Wörtern", "16 Wörtern"]
         antwort[12] = ["William Shakespear", "Walter Shakespear", "Werner Shakespear", "Willhelm Shakespear"]
         antwort[13] = ["Fett", "Kursiv", "Unterstrichen", "Durchgestrichen"]
-        antwort[14] = []
+        #antwort[14] = []
     
 class TextPrint():
     def __init__(self):
@@ -75,8 +76,9 @@ class TextPrint():
 class PygView():
     def __init__(self,xres=3000,yres=800):
         PygView.xres=xres
-        PygView.yres=yres
-
+        PygView.yres=yres 
+        self.fps=60
+        self.buttons = ["A", "X", "Y", "B" ]
         pygame.init()
          
         # Set the width and height of the screen [width,height]
@@ -96,12 +98,41 @@ class PygView():
             
         # Get ready to print
         self.textPrint = TextPrint()
-
+    
+    def generate_question(self):
+        # wächterfunktionen
+        if len(self.oldquestions) >= len(Game.frage):
+            print ("Error: Keine neuen Fragen verfügbar!")
+            self.gameover = True
+        # choose a fresh question:
+        numbers = list(Game.frage.keys())
+        numbers = [n for n in numbers if n not in self.oldquestions]
+        self.number = random.choice(numbers)
+        self.question = Game.frage[self.number]
+        self.correct = Game.antwort[self.number][0]
+        self.wrongs = Game.antwort[self.number][1:]
+        random.shuffle(self.wrongs)
+        self.wrongs = self.wrongs[:3]
+        self.correct_number = random.randint(0,3)
+        self.answers = self.wrongs[:]
+        self.answers.insert(self.correct_number, self.correct)
+        
+        
+        
+        
+        
     def run(self):
         
-
+        self.playtime = 0
+        self.runde = 1
+        self.oldquestions = []
+        self.generate_question()
         # -------- Main Program Loop -----------
         while not self.gameover:
+            milliseconds = self.clock.tick(self.fps)
+            seconds = milliseconds / 1000
+            self.playtime += seconds
+            
             # EVENT PROCESSING STEP
             for event in pygame.event.get():  # User did something
                 if event.type == pygame.QUIT: # If user clicked close
@@ -126,8 +157,14 @@ class PygView():
             self.joystick_count = pygame.joystick.get_count()
 
             #textPrint.print(screen, "Number of joysticks: {}".format(joystick_count) )
-            self.textPrint.print(self.screen, "{}".format(Game.anweisung0))
             self.textPrint.indent()
+            
+            self.textPrint.print(self.screen, "Frage: {}".format(self.question))
+            for n in range(4):
+                self.textPrint.print(self.screen, "Antwort {}: {}".format(self.buttons[n], self.answers[n]))
+                
+                self.textPrint.print(self.screen, "{}".format(Game.anweisung0))
+            
             
             # For each joystick:
             for j in range(self.joystick_count):
