@@ -74,11 +74,11 @@ class TextPrint():
         self.x -= 10
 
 class PygView():
-    def __init__(self,xres=3000,yres=800):
+    def __init__(self,xres=1200,yres=800):
         PygView.xres=xres
         PygView.yres=yres 
         self.fps=60
-        self.buttons = ["A", "X", "Y", "B" ]
+        self.answerbuttons = ["A", "X", "Y", "B" ]
         pygame.init()
          
         # Set the width and height of the screen [width,height]
@@ -161,9 +161,9 @@ class PygView():
             
             self.textPrint.print(self.screen, "Frage: {}".format(self.question))
             for n in range(4):
-                self.textPrint.print(self.screen, "Antwort {}: {}".format(self.buttons[n], self.answers[n]))
+                self.textPrint.print(self.screen, "Antwort {}: {}".format(self.answerbuttons[n], self.answers[n]))
                 
-                self.textPrint.print(self.screen, "{}".format(Game.anweisung0))
+            self.textPrint.print(self.screen, "{}".format(Game.anweisung0))
             
             
             # For each joystick:
