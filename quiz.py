@@ -14,8 +14,8 @@ class Game():
 
         # Anweisungen:
         anweisung0 = "----  Drücke schnell die entsprechende Taste!  ----"
-        anweisung1 = "STOP! Buzzer von Spieler 1 wurde am schnellsten aktiviert. Er darf jetzt Antworten!" 
-        anweisung2 = "STOP! Buzzer von Spieler 2 wurde am schnellsten aktiviert. Er darf jetzt Antworten!"
+        #anweisung1 = "STOP! Buzzer von Spieler 1 wurde am schnellsten aktiviert. Er darf jetzt Antworten!" 
+        #anweisung2 = "STOP! Buzzer von Spieler 2 wurde am schnellsten aktiviert. Er darf jetzt Antworten!"
         anweisung3 = "STOP! Die Zeit ist abgelaufen...Nächste Frage kommt..."
         frage={}
         frage[1]= "Wieviel kostet der Programmierkurs von Horst Jens in einer Stunde?"
@@ -78,7 +78,9 @@ class PygView():
         PygView.xres=xres
         PygView.yres=yres 
         self.fps=60
-        self.answerbuttons = ["A", "X", "Y", "B" ]
+        self.answerbuttons = ["X", "A", "B", "Y" ]
+        #self.tainted = [False, False, False, False]
+        #self.locked = False
         pygame.init()
          
         # Set the width and height of the screen [width,height]
@@ -98,8 +100,16 @@ class PygView():
             
         # Get ready to print
         self.textPrint = TextPrint()
+        
+        self.playtime = 0
+        self.runde = 1
+        self.oldquestions = []
+        self.generate_question()
     
     def generate_question(self):
+        self.tainted = [False, False, False, False]
+        self.locked = False
+        self.victor = -1
         # wächterfunktionen
         if len(self.oldquestions) >= len(Game.frage):
             print ("Error: Keine neuen Fragen verfügbar!")
@@ -122,11 +132,6 @@ class PygView():
         
         
     def run(self):
-        
-        self.playtime = 0
-        self.runde = 1
-        self.oldquestions = []
-        self.generate_question()
         # -------- Main Program Loop -----------
         while not self.gameover:
             milliseconds = self.clock.tick(self.fps)
@@ -140,6 +145,8 @@ class PygView():
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         self.gameover = True
+                    if event.key == pygame.K_SPACE:
+                        self.generate_question()
                 # Possible joystick actions: JOYAXISMOTION JOYBALLMOTION JOYBUTTONDOWN JOYBUTTONUP JOYHATMOTION
                 if event.type == pygame.JOYBUTTONDOWN:
                     print("Joystick button pressed.")
@@ -171,12 +178,12 @@ class PygView():
                 self.joystick = pygame.joystick.Joystick(j)
                 self.joystick.init()
             
-                self.textPrint.print(self.screen, "Joystick {}".format(j) )
+                #self.textPrint.print(self.screen, "Joystick {}".format(j) )
                 #textPrint.indent()
             
                 # Get the name from the OS for the controller/joystick
                 self.name = self.joystick.get_name()
-                self.textPrint.print(self.screen, "Joystick name: {}".format(self.name) )
+                #self.textPrint.print(self.screen, "Joystick name: {}".format(self.name) )
                 
                 # Usually axis run in pairs, up/down for one, and left/right for
                 # the other.
@@ -195,9 +202,31 @@ class PygView():
                 # wir wollen button0
                 for i in range( self.buttons ):
                     self.button = self.joystick.get_button( i )
-                    for joynr, anweisnr in ((0,Game.anweisung1), (1, Game.anweisung2)):                     
+                    #for joynr, anweisnr in ((0,Game.anweisung1), (1, Game.anweisung2)):                     
+                    for joynr in (0,1):
+                        
                         if j==joynr and i in (0,1,2,3) and self.button==1:
-                            self.textPrint.print(self.screen, "{}".format(anweisnr))
+                            if not self.locked:
+                                if i == self.correct_number:
+                                    if self.tainted[j]:
+                                        res = "Button locked, Wrong Answer!"
+                                    else:
+                                        res = "Correct!"
+                                        self.locked = True
+                                        self.victor = j                                 
+                                else:
+                                    res = "Wrong!"
+                                    self.tainted[j] = True
+                            else:
+                                if self.victor == j:
+                                    if i  == self.correct_number: 
+                                        res = "correct...!"
+                                    else:
+                                        res = "trottel, du wusstest es schon besser..."
+                                else:
+                                    res = "button locked, other player was faster and lucky"
+                                    
+                            self.textPrint.print(self.screen, " joystick {} Buzzer-Taste {} {}".format(j,i,res))
                             #self.textPrint.print(self.screen, "Es wurde der Button {} gedrückt!".format(i))
                     
                 # Hat switch. All or nothing for direction, not like joysticks.
