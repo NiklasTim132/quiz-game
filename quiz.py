@@ -26,20 +26,22 @@ class Game():
         frage[2]= ["Was heißt 'Guten Tag' auf Französisch?"]
         frage[3]= ["Wenn zehn Äpfel 3€ kosten, wieviel Euro",
                    " kosten dann 50 Äpfel?"]
-                   
-        # TODO: niklas... lange Fragen splitten wie oben
-        
-        frage[4]= "Wann gilt der Pythagoräische Lehrsatz in der Mathematik?"
-        frage[5]= "Wieviele Tage hat das Jahr?"
-        frage[6]= "Wann gilt ein Schachspiel als Patt?"
-        frage[7]= "Wie lautet die Landesvorwahl von England?"
-        frage[8]= "In der Programmiersprache 'Python' bewirkt dieses Zeichen '#' was...?"
-        frage[9]= "Die IBAN ist notwendig bei/für..?"
-        frage[10]= "Mit welchen vier Standard Tasten lässt sich der PC-Charakter in Minecraft steuern?"
-        frage[11]= "Aus wie vielen Worten besteht dass Götz Zitat?"
-        frage[12]= "'Romeo und Julia' ist ein Stück von...?"
-        frage[13]= "In der Programmiersprache 'HTML' steht dieses Zeichen '<b>...</b>' für welche Textformatierung?"
-        #frage[14]= "Ein Titel der EAV lautet...?"
+                 
+        frage[4]= ["Wann gilt der Pythagoräische Lehrsatz", 
+        "in der Mathematik?"]
+        frage[5]= ["Wieviele Tage hat das Jahr?"]
+        frage[6]= ["Wann gilt ein Schachspiel als Patt?"]
+        frage[7]= ["Wie lautet die Landesvorwahl von England?"]
+        frage[8]= ["In der Programmiersprache 'Python'",
+        "bewirkt dieses Zeichen '#' was...?"]
+        frage[9]= ["Die IBAN ist notwendig bei/für..?"]
+        frage[10]= ["Mit welchen vier Standard Tasten",
+        " lässt sich der PC-Charakter in Minecraft steuern?"]
+        frage[11]= ["Aus wie vielen Worten besteht dass Götz Zitat?"]
+        frage[12]= ["'Romeo und Julia' ist ein Stück von...?"]
+        frage[13]= ["In der Programmiersprache 'HTML'",
+        " steht dieses Zeichen '<b>...</b>' für welche Textformatierung?"]
+        frage[14]= ["Ein Titel der EAV lautet...?"]
         #frage[15]= "Als 'Bug' wird in der IT-Sprache was bezeichnet?"
 
 
@@ -50,7 +52,7 @@ class Game():
         antwort[3] = ["15€", "30€", "45€", "5€", "150€"]
         antwort[4] = ["Nur in einem rechtwinkeligen Dreieck", "In jedem Dreieck", "Nur bei gleichschenkeligen Dreiecken", "Der Lehrsatz ist garnicht existent"]
         antwort[5] = ["365 Tage", "563 Tage", "635 Tage", "536 Tage", "653 Tage"]
-        antwort[6] = ["Wenn keine Figur sich mehr bewegen kann, aber der König nicht im Schach steht und alle Ausweichfelder blockiert sind"]
+        antwort[6] = ["Wenn keine Figur sich mehr bewegen kann, aber der König nicht im Schach steht und alle Ausweichfelder blockiert sind", "Wenn der König im Schach steht und alle Ausweichfelder bedroht sind", "Wenn die Dame bedroht wird und es für sie keine Ausweichfelder mehr gibt", "Keine der genannten Antworten"]
         antwort[7] = ["+44","+55","+66","+43"]
         antwort[8] = ["Es kommentiert einen Befehl vorrübergehend aus","Es stoppt das Skript komplett","Es macht nichts","Es wird nicht in Python sondern in HTML verwendet"]
         antwort[9] = ["Zahlungen","Das Ausleihen von Büchern","Programmen","Anrufe"]
@@ -58,7 +60,7 @@ class Game():
         antwort[11] = ["4 Wörtern", "8 Wörtern", "12 Wörtern", "16 Wörtern"]
         antwort[12] = ["William Shakespear", "Walter Shakespear", "Werner Shakespear", "Willhelm Shakespear"]
         antwort[13] = ["Fett", "Kursiv", "Unterstrichen", "Durchgestrichen"]
-        #antwort[14] = []
+        antwort[14] = ["Werwolf-Attacke", "Monsterball ist überall", "Waka Waka", "La La La"]
 
 def cleanbyte(number):
     """makes sure the entered number is in the range of 0-255 and returns an integer in this range"""
@@ -97,6 +99,7 @@ def write(background, text, x=50, y=150, color=(0,0,0),
             background.blit(surface, (x-fw//2, y-fh//2))
         else:      # topleft corner is x,y
             background.blit(surface, (x,y))
+        return fw, fh
 
 def elastic_collision(sprite1, sprite2):
         """elasitc collision between 2 VectorSprites (calculated as disc's).
@@ -633,6 +636,11 @@ class Viewer(object):
         self.clock = pygame.time.Clock()
         self.fps = fps
         self.playtime = 0.0
+        # --- höchste fragennummer is? ----
+        self.maxnr = 0
+        for nr in Game.frage:
+            if nr > self.maxnr:
+                self.maxnr = nr
         # ------ background images ------
         self.backgroundfilenames = [] # every .jpg file in folder 'data'
         try:
@@ -730,7 +738,7 @@ class Viewer(object):
 
                     
     def new_question(self):
-        self.number = random.randint(1,13)
+        self.number = random.randint(1,self.maxnr)
         self.question = Game.frage[self.number]
         
         
@@ -791,16 +799,38 @@ class Viewer(object):
             self.screen.blit(self.background, (0, 0))
             
             # --- question schreiben ---
-            write(self.screen, self.question, Viewer.width // 2, 100, fontsize=30, color=(255,255,255),center=True)
+            # self question ist eine liste weil mehrzeilig
+            # deshalb, stück für stück abarbeiten
+            wt, ht = 0, 0
+            for y, q in enumerate(self.question):
+                 w, h =write(self.screen, q, Viewer.width // 2, 100+y*30, fontsize=30, color=(255,255,255),center=True)
+                 if w > wt:
+                     wt = w
+            
+            #pygame.draw.rect( self.screen, (255,255,255), (Viewer.width // 2 - wt//2 - 5, 100+ y*30 -5, wt + 10, y*30+10), 1)
+            pygame.draw.rect( self.screen, (255,255,255), (15, 80, Viewer.width - 30,  y*30 +50), 1)
+             
+            
+            
             farben = [(0,255,0) , (255,0,0) , (255,165,0) , (0,0,255)  ]
             
-            #TODO: Niklas, alles tiefer runterschieben
+            # ---- antworten schreiben -----
+            reihung= [0,1,2,3]
+            random.shuffle(reihung)
             for nr, char in enumerate(["(A)","(B)","(Y)","(X)"]):
                 bcolor = farben [nr]
-                write(self.screen, Game.antwort[self.number][nr], 498, 200+100*nr, fontsize=50, color=bcolor)
+                print("nr", nr)
+                print("self.number", self.number)
+                rnr = reihung[nr]
+                print("game.antwort[self.number][rnr]:", Game.antwort[self.number][nr])
+                w, h = write(self.screen, Game.antwort[self.number][nr], 200, 300+100*nr, fontsize=50, color=bcolor)
+        
                 
-                write(self.screen, char, 400, 200+100*nr, fontsize=50, color=bcolor)
-              
+                w,h = write(self.screen, char, 50, 300+100*nr, fontsize=50, color=bcolor)
+                
+                pygame.draw.rect(self.screen, (200,200,200), (50, 300+100*nr,w,h), 1)
+                
+                             
             # ---- create random sprites -----
         #    if random.random() < 0.003:
          #       Bubble()
