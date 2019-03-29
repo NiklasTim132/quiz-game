@@ -876,11 +876,11 @@ class Viewer(object):
             mouses = [self.mouse4, self.mouse5]
             for number, j in enumerate(self.joysticks):
                 # ====== number is di nummer des joysticks, oida! ====
-                if number == 0 or number==1:
-                   x = j.get_axis(0)
-                   y = j.get_axis(1)
-                   mouses[number].x += x * 20 # *2 
-                   mouses[number].y += y * 20 # *2 
+                if number == 0 or number==1 or number==2 or number==3:
+                   #x = j.get_axis(0)
+                   #y = j.get_axis(1)
+                   #mouses[number].x += x * 20 # *2 
+                   #mouses[number].y += y * 20 # *2 
                    buttons = j.get_numbuttons()
                    
                    for b in range(buttons):
