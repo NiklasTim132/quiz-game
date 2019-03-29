@@ -1,9 +1,9 @@
 """
-author: Niklas REBEL
+author: Niklas REBEL and Horst JENS
 email: niklas.rebel@gmail.com
 license: gpl, see http://www.gnu.org/licenses/gpl-3.0.de.html
-download: https://github.com/horstjens/feuerwerk/blob/master/vectortemplate2d.py
-idea: clean python3/pygame template using pygame.math.vector2
+download: https://github.com/niklastim132/quiz-game/master/quiz-game.py
+idea: Creating a nice little quiz-game with 4 joysticks and a lot of questions.
 
 """
 import pygame
