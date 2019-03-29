@@ -1,7 +1,6 @@
 """
-author: Horst JENS
-email: horstjens@gmail.com
-contact: see http://spielend-programmieren.at/de:kontakt
+author: Niklas REBEL
+email: niklas.rebel@gmail.com
 license: gpl, see http://www.gnu.org/licenses/gpl-3.0.de.html
 download: https://github.com/horstjens/feuerwerk/blob/master/vectortemplate2d.py
 idea: clean python3/pygame template using pygame.math.vector2
@@ -42,7 +41,9 @@ class Game():
         frage[13]= ["In der Programmiersprache 'HTML'",
         " steht dieses Zeichen '<b>...</b>' für welche Textformatierung?"]
         frage[14]= ["Ein Titel der EAV lautet...?"]
-        #frage[15]= "Als 'Bug' wird in der IT-Sprache was bezeichnet?"
+        frage[15]=["Löse die Gleichung, und nenne das Ergebniss: X + 10 = 5 * 4"]
+        #frage[16]=["Die Finken waren für Charles Darwin besonders. Warum?"]
+        #frage[17]= "Als 'Bug' wird in der IT-Sprache was bezeichnet?"
 
 
         antwort = {}
@@ -61,6 +62,7 @@ class Game():
         antwort[12] = ["William Shakespear", "Walter Shakespear", "Werner Shakespear", "Willhelm Shakespear"]
         antwort[13] = ["Fett", "Kursiv", "Unterstrichen", "Durchgestrichen"]
         antwort[14] = ["Werwolf-Attacke", "Monsterball ist überall", "Waka Waka", "La La La"]
+        antwort[15] = ["X = 10", "X = -10", "X = 20", "X = 0", "X = -20"]
 
 def cleanbyte(number):
     """makes sure the entered number is in the range of 0-255 and returns an integer in this range"""
@@ -749,6 +751,17 @@ class Viewer(object):
         self.new_question()
         pygame.mouse.set_visible(False)
         oldleft, oldmiddle, oldright  = False, False, False
+        # joysticknumber, buttonnumer. dös is a dict of dicts.
+        jpushed = { 0 : {0:False, 1:False, 2:False, 3:False} ,
+                    1 : {0:False, 1:False, 2:False, 3:False}, 
+                    2 : {0:False, 1:False, 2:False, 3:False},
+                    3 : {0:False, 1:False, 2:False, 3:False}
+                   }
+        joldpushed = { 0 : {0:False, 1:False, 2:False, 3:False} ,
+                    1 : {0:False, 1:False, 2:False, 3:False}, 
+                    2 : {0:False, 1:False, 2:False, 3:False},
+                    3 : {0:False, 1:False, 2:False, 3:False}
+                   }
         self.snipertarget = None
         gameOver = False
         exittime = 0
@@ -862,23 +875,33 @@ class Viewer(object):
             # ------ joystick handler -------
             mouses = [self.mouse4, self.mouse5]
             for number, j in enumerate(self.joysticks):
-                if number == 0:
+                # ====== number is di nummer des joysticks, oida! ====
+                if number == 0 or number==1:
                    x = j.get_axis(0)
                    y = j.get_axis(1)
                    mouses[number].x += x * 20 # *2 
                    mouses[number].y += y * 20 # *2 
                    buttons = j.get_numbuttons()
+                   
                    for b in range(buttons):
+                       if b > 3:
+                           continue   # uns interessieren nur die ersten 4 buttons
+                       # ========= b is di interne nummer vom joystickbutton , kapiert? ============ print("was ist b?", b)
                        pushed = j.get_button( b )
-                       if b == 0 and pushed:
+                       # === pushed is demnach true oda foisch, gö?
+                       #jpushed[number][b] = False # prinzipiell amal auf falsch setzen
+                       jpushed[number][b] = pushed
+                       
+                       if b == 0 and not pushed and joldpushed[number][b]:
                            Flytext(100, 400,"X {}".format(number), color=(0,0,255),fontsize=200,acceleration_factor=1.2,duration=2.0)
-                       elif b == 1 and pushed:
+                       elif b == 1 and not pushed and joldpushed[number][b]:
                            Flytext(200,400, "A {}".format(number),color=(17,206,19),fontsize=200,acceleration_factor=1.2,duration=2.0)
-                       elif b == 2 and pushed:
+                       elif b == 2  and not pushed and joldpushed[number][b]:
                            Flytext(300,400, "B {}".format(number),color=(255,0,0),fontsize=200,acceleration_factor=1.2,duration=2.0)
-                       elif b == 3 and pushed:
+                       elif b == 3  and not pushed and joldpushed[number][b]:
                            Flytext(400,400, "Y {}".format(number),color=(255,165,0),fontsize=200,acceleration_factor=1.2,duration=2.0)
-            
+                       
+                       joldpushed[number][b] = jpushed[number][b]
             # write text below sprites
             write(self.screen, "FPS: {:8.3}".format(
                 self.clock.get_fps()), x=10, y=10, color=(128,0,128))
