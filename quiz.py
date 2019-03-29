@@ -1,9 +1,9 @@
 """
-author: Niklas REBEL and Horst JENS
+author: Niklas REBEL
 email: niklas.rebel@gmail.com
 license: gpl, see http://www.gnu.org/licenses/gpl-3.0.de.html
-download: https://github.com/niklastim132/quiz-game/master/quiz-game.py
-idea: Creating a nice little quiz-game with 4 joysticks and a lot of questions.
+download: https://github.com/horstjens/feuerwerk/blob/master/vectortemplate2d.py
+idea: clean python3/pygame template using pygame.math.vector2
 
 """
 import pygame
@@ -892,13 +892,13 @@ class Viewer(object):
                        #jpushed[number][b] = False # prinzipiell amal auf falsch setzen
                        jpushed[number][b] = pushed
                        
-                       if b == 0 and not pushed and joldpushed[number][b]:
+                       if b == 0 and pushed and not joldpushed[number][b]:
                            Flytext(100, 400,"X {}".format(number), color=(0,0,255),fontsize=200,acceleration_factor=1.2,duration=2.0)
-                       elif b == 1 and not pushed and joldpushed[number][b]:
+                       elif b == 1 and pushed and not joldpushed[number][b]:
                            Flytext(200,400, "A {}".format(number),color=(17,206,19),fontsize=200,acceleration_factor=1.2,duration=2.0)
-                       elif b == 2  and not pushed and joldpushed[number][b]:
+                       elif b == 2  and pushed and not joldpushed[number][b]:
                            Flytext(300,400, "B {}".format(number),color=(255,0,0),fontsize=200,acceleration_factor=1.2,duration=2.0)
-                       elif b == 3  and not pushed and joldpushed[number][b]:
+                       elif b == 3  and pushed and not joldpushed[number][b]:
                            Flytext(400,400, "Y {}".format(number),color=(255,165,0),fontsize=200,acceleration_factor=1.2,duration=2.0)
                        
                        joldpushed[number][b] = jpushed[number][b]
