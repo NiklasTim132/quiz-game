@@ -168,120 +168,6 @@ class Flytext(pygame.sprite.Sprite):
             if self.time > self.duration:
                 self.kill()      # remove Sprite from screen and from groups
 
-class Crosshair(pygame.sprite.Sprite):
-    def __init__(self, radius = 50, color=(255,0,0), x=320, y=240,
-                    startx=100,starty=100, control="mouse", ):
-        """create a (black) surface and paint a blue Crosshair on it"""
-        self._layer=10
-        pygame.sprite.Sprite.__init__(self,self.groups)
-        self.radius = radius
-        self.color = color
-        self.startx=startx
-        self.starty=starty
-        self.x = x
-        self.y = y
-        self.dx = 0
-        self.dy = 0
-        self.r = color[0]
-        self.g = color[1]
-        self.b = color[2]
-        self.delta = -10
-        self.age = 0
-        self.pos = pygame.mouse.get_pos()
-        self.move = 0
-        self.tail=[]
-        self.create_image()
-        self.rect = self.image.get_rect()
-        self.control = control # "mouse" "keyboard1" "keyboard2"
-        self.pushed = False
-
-    def create_image(self):
-
-        self.image = pygame.surface.Surface((self.radius*0.5, self.radius*0.5))
-        delta1 = 12.5
-        delta2 = 25
-        w = self.radius*0.5 / 100.0
-        h = self.radius*0.5 / 100.0
-        # pointing down / up
-        for y in (0,2,4):
-            pygame.draw.line(self.image,(self.r-delta2,self.g,self.b),
-                         (35*w,0+y),(50*w,15*h+y),2)
-            pygame.draw.line(self.image,(self.r-delta2,self.g,self.b),
-                         (50*w,15*h+y),(65*w,0+y),2)
-    
-            pygame.draw.line(self.image,(self.r-delta2,self.g,self.b),
-                         (35*w,100*h-y),(50*w,85*h-y),2)
-            pygame.draw.line(self.image,(self.r-delta2,self.g,self.b),
-                         (50*w,85*h-y),(65*w,100*h-y),2)
-        # pointing right / left                 
-        for x in (0,2,4):
-            pygame.draw.line(self.image,(self.r-delta2,self.g,self.b),
-                         (0+x,35*h),(15*w+x,50*h),2)
-            pygame.draw.line(self.image,(self.r-delta2,self.g,self.b),
-                         (15*w+x,50*h),(0+x,65*h),2)
-            
-            pygame.draw.line(self.image,(self.r-delta2,self.g,self.b),
-                         (100*w-x,35*h),(85*w-x,50*h),2)
-            pygame.draw.line(self.image,(self.r-delta2,self.g,self.b),
-                         (85*w-x,50*h),(100*w-x,65*h),2)
-        self.image.set_colorkey((0,0,0))
-        self.rect=self.image.get_rect()
-        self.rect.center = self.x, self.y
-
-    def update(self, seconds):
-        if self.control == "mouse":
-            self.x, self.y = pygame.mouse.get_pos()
-        elif self.control == "keyboard1":
-            pressed = pygame.key.get_pressed()
-            if pressed[pygame.K_LSHIFT]:
-                delta = 2
-            else:
-                delta = 9
-            if pressed[pygame.K_w]:
-                self.y -= delta
-            if pressed[pygame.K_s]:
-                self.y += delta
-            if pressed[pygame.K_a]:
-                self.x -= delta
-            if pressed[pygame.K_d]:
-                self.x += delta
-        elif self.control == "keyboard2":
-            pressed = pygame.key.get_pressed()
-            if pressed[pygame.K_RSHIFT]:
-                delta = 2
-            else:
-                delta = 9
-            if pressed[pygame.K_UP]:
-                self.y -= delta
-            if pressed[pygame.K_DOWN]:
-                self.y += delta
-            if pressed[pygame.K_LEFT]:
-                self.x -= delta
-            if pressed[pygame.K_RIGHT]:
-                self.x += delta
-        elif self.control == "joystick1":
-            pass
-        elif self.control == "joystick2":
-            pass
-        if self.x < 0:
-            self.x = 0
-        elif self.x > Viewer.width:
-            self.x = Viewer.width
-        if self.y < 0:
-            self.y = 0
-        elif self.y > Viewer.height:
-            self.y = Viewer.height
-        self.tail.insert(0,(self.x,self.y))
-        self.tail = self.tail[:128]
-        self.rect.center = self.x, self.y
-        self.r += self.delta   # self.r can take the values from 255 to 101
-        if self.r < 151:
-            self.r = 151
-            self.delta = 10
-        if self.r > 255:
-            self.r = 255
-            self.delta = -10
-        self.create_image()
 
 class VectorSprite(pygame.sprite.Sprite):
     """base class for sprites. this class inherits from pygames sprite class"""
@@ -490,134 +376,6 @@ class Spark(VectorSprite):
         self.rect= self.image.get_rect()
         self.image0 = self.image.copy()    
 
-class Spaceship(VectorSprite):
-    
-    
-    def _overwrite_parameters(self):
-        self.friction = 0.980  #1.0 = no friction
-        #self.radius = 8
-        self.mass = 3000
-        self.rockets = 4
-        self.fuel = 100
-        self.hitpoints = 100000
-    
-    def fire(self):
-        p = pygame.math.Vector2(self.pos.x, self.pos.y)
-        t = pygame.math.Vector2(25,0)
-        t.rotate_ip(self.angle)
-        sa = [ ]
-        d = 90 / (self.rockets + 1) # rockets fly in a 90° arc
-        start = -45
-        point = start+d
-        while point < 45:
-            sa.append(point)
-            point += d
-        # in sa are the desired shooting angles for rockets
-        for point in sa:
-            v = pygame.math.Vector2(188,0)
-            v.rotate_ip(self.angle+point)
-            v += self.move # adding speed of spaceship to rocket
-            a = self.angle + point
-            Rocket(pos=p+t, move=v, angle=a)
-        
-    
-    def update(self, seconds):
-        VectorSprite.update(self, seconds)
-
-    def strafe_left(self):
-        v = pygame.math.Vector2(50, 0)
-        v.rotate_ip(self.angle + 90)   # strafe left!!
-        self.move += v
-        
-    def strafe_right(self):
-        v = pygame.math.Vector2(50, 0)
-        v.rotate_ip(self.angle - 90)   # strafe right!!
-        self.move += v
-        
-    
-    def move_forward(self, speed=1):
-        v = pygame.math.Vector2(speed,0)
-        v.rotate_ip(self.angle)
-        self.move += v
-        # --- engine glow ----
-        #p = pygame.math.Vector2(-30,0)
-        #p.rotate_ip(self.angle)
-        #Muzzle_flash(pos=pygame.math.Vector2(self.pos.x, self.pos.y) + p, max_age=0.1, angle = self.angle+180)
-        
-        
-    def move_backward(self, speed=1):
-        v = pygame.math.Vector2(speed,0)
-        v.rotate_ip(self.angle)
-        self.move += -v
-        
-    def turn_left(self, speed=3):
-        self.rotate(speed)
-        
-    def turn_right(self, speed=3):
-        self.rotate(-speed)    
-    
-    def create_image(self):
-        self.image = pygame.Surface((50,50))
-        pygame.draw.polygon(self.image, (0,0,255), ((0,0),(50,25),(0,50),(25,25)))
-        self.image.set_colorkey((0,0,0))
-        self.image.convert_alpha()
-        self.image0 = self.image.copy()
-        self.rect = self.image.get_rect()
-        
-
-
-class Smoke(VectorSprite):
-
-    def create_image(self):
-        self.image = pygame.Surface((50,50))
-        pygame.draw.circle(self.image, self.color, (25,25),
-                           int(self.age*3))
-        self.image.set_colorkey((0,0,0))
-        self.image.convert_alpha()
-        self.rect = self.image.get_rect()
-
-    def update(self, seconds):
-        VectorSprite.update(self, seconds)
-        if self.gravity is not None:
-            self.move += self.gravity * seconds
-        self.create_image()
-        self.rect=self.image.get_rect()
-        self.rect.center=(self.pos.x, self.pos.y)
-        c = int(self.age * 100)
-        c = min(255,c)
-        self.color=(c,c,c)
-
-
-
-class Star(VectorSprite):
-
-
-    def _overwrite_parameters(self):
-        self._layer = 1 
-        self.kill_on_edge = True
-        x = random.randint(0, Viewer.width)
-        y = random.randint(25,150)
-        self.pos = pygame.math.Vector2(x, -1)
-        self.move = pygame.math.Vector2(0, -y)
-
-    def create_image(self):
-        #self.image = Viewer.images["bullet"]
-        self.image = pygame.Surface((5,5))
-        #pygame.draw.rect(self.image, (255,255,0), (0,2, 8,3),0)
-        #pygame.draw.line(self.image, (220,220,0), (0,3),(10,3),2)
-        #pygame.draw.polygon(self.image, (255,255,0), 
-        #                    [(0,0), (7,0), (9,2), (9,3), (7, 4), (0,4)]
-        #                   ) 
-        #self.image.fill((255,255,0))
-        
-        pygame.draw.circle( self.image, (255,255,255), (2,2), 
-                            random.randint(0,3))
-        
-        self.image.set_colorkey((0,0,0))
-        self.image.convert_alpha()
-        self.image0 = self.image.copy()
-        self.rect = self.image.get_rect()
-
 
 
 class Viewer(object):
@@ -708,7 +466,7 @@ class Viewer(object):
         # --- sprites in the allgroup will be visible each frame ---
         self.allgroup =  pygame.sprite.LayeredUpdates() # for drawing
         # --- additional groups for collision detection ----
-        self.crosshairgroup = pygame.sprite.Group()
+        #self.crosshairgroup = pygame.sprite.Group()
 #        self.rocketgroup = pygame.sprite.Group()
  #       self.playergroup = pygame.sprite.Group()
   #      self.bubblegroup = pygame.sprite.Group()
@@ -717,26 +475,21 @@ class Viewer(object):
         # ---- assign sprite groups to the Sprite classes ----
         VectorSprite.groups = self.allgroup
         Flytext.groups = self.allgroup
-        Crosshair.groups = self.allgroup, self.crosshairgroup
+        #Crosshair.groups = self.allgroup, self.crosshairgroup
     #    Rocket.groups = self.allgroup, self.rocketgroup
      #   Spaceship.groups = self.allgroup, self.playergroup
         Spark.groups = self.allgroup
-        Star.groups = self.allgroup
+        #Star.groups = self.allgroup
    #     Bubble.groups = self.allgroup, self.bubblegroup
     #    Monster1.groups = self.allgroup, self.monstergroup
 
-   
-        # ------ player1,2,3: mouse, keyboard, joystick ---
-        # -- number 0 and 1 are for the players
-     #   self.player1 =  Spaceship(warp_on_edge=True, pos=pygame.math.Vector2(Viewer.width/2,-Viewer.height/2))
-      #  self.player2 =  Spaceship(warp_on_edge=True, pos=pygame.math.Vector2(Viewer.width/2+100,-Viewer.height/2))
 
         
-        self.mouse1 = Crosshair(control="mouse", color=(255,0,0))
-        self.mouse2 = Crosshair(control='keyboard1', color=(255,255,0))
-        self.mouse3 = Crosshair(control="keyboard2", color=(255,0,255))
-        self.mouse4 = Crosshair(control="joystick1", color=(255,128,255))
-        self.mouse5 = Crosshair(control="joystick2", color=(255,255,255))
+        #self.mouse1 = Crosshair(control="mouse", color=(255,0,0))
+        #self.mouse2 = Crosshair(control='keyboard1', color=(255,255,0))
+        #self.mouse3 = Crosshair(control="keyboard2", color=(255,0,255))
+        #self.mouse4 = Crosshair(control="joystick1", color=(255,128,255))
+        #self.mouse5 = Crosshair(control="joystick2", color=(255,255,255))
 
                     
     def new_question(self):
@@ -848,8 +601,8 @@ class Viewer(object):
         #    if random.random() < 0.003:
          #       Bubble()
             
-            if random.random() < 0.01:
-                Star()
+            #if random.random() < 0.01:
+            #    Star()
                 
           #  if random.random() < 0.001:
            #     Monster1()
@@ -873,7 +626,7 @@ class Viewer(object):
             oldleft, oldmiddle, oldright = left, middle, right
 
             # ------ joystick handler -------
-            mouses = [self.mouse4, self.mouse5]
+            #mouses = [self.mouse4, self.mouse5]
             for number, j in enumerate(self.joysticks):
                 # ====== number is di nummer des joysticks, oida! ====
                 if number == 0 or number==1 or number==2 or number==3:
@@ -917,13 +670,13 @@ class Viewer(object):
             #self.movement_indicator(self.player2, (1320, 105))
             
             # --- Martins verbesserter Crosshairtail -----
-            for mouse in self.crosshairgroup:
-                if len(mouse.tail)>2:
-                    for a in range(1,len(mouse.tail)):
-                        r,g,b = mouse.color
-                        pygame.draw.line(self.screen,(r-a,g,b),
-                                     mouse.tail[a-1],
-                                     mouse.tail[a],10-a*10//10)
+            #for mouse in self.crosshairgroup:
+            #    if len(mouse.tail)>2:
+            #        for a in range(1,len(mouse.tail)):
+            #            r,g,b = mouse.color
+            #            pygame.draw.line(self.screen,(r-a,g,b),
+            #                         mouse.tail[a-1],
+            #                         mouse.tail[a],10-a*10//10)
             
             # -------- next frame -------------
             pygame.display.flip()
