@@ -382,6 +382,46 @@ class Viewer(object):
     width = 0
     height = 0
     images = {}
+    sounds = {}
+    menu =  {"main":            ["resume", "settings", "credits", "quit" ],
+            #main
+            "settings":        ["back", "video", "difficulty", "reset all values"],
+            #settings
+            "difficulty":      ["back", "powerups", "bosshealth", "playerhealth"],
+            "video":           ["back", "resolution", "fullscreen"],
+            #difficulty
+            "bosshealth":      ["back", "1000", "2500", "5000", "10000"],
+            "playerhealth":    ["back", "100", "250", "500", "1000"],
+            "powerups":        ["back", "laser", "bonusrockets", "heal", "shield", "speed"],
+            #powerups
+            "bonusrockets":    ["back", "bonusrocketincrease", "bonusrocket duration"],
+            "laser":           ["back", "laserdamage", "laser duration"],
+            "heal":            ["back", "heal effectiveness"],
+            "shield":          ["back", "bossrocket deflection", "shield duration"],
+            "speed":           ["back", "speed increase", "speed duration"],
+            #powerup effects
+            "bonusrocketincrease": ["back", "1", "2", "3", "5", "10"],
+            "bonusrocket duration": ["back", "10", "30", "60"],
+            "laserdamage":     ["back", "3", "5", "10"],
+            "laser duration": ["back", "10", "30", "60"],            
+            "heal effectiveness": ["back", "50", "100", "250", "full health"],
+            "bossrocket deflection": ["back", "true", "false"],
+            "shield duration": ["back", "10", "30", "60"],
+            "speed increase":  ["back", "3", "5", "10", "15"],
+            "speed duration":  ["back", "10", "30", "60"],
+            #video
+            "resolution":      ["back", "720p", "1080p", "1440p", "4k"],
+            "fullscreen":      ["back", "true", "false"]
+            }
+    
+    
+    #Viewer.menu["resolution"] = pygame.display.list_modes()
+    history = ["main"]
+    cursor = 0
+    name = "main"
+    fullscreen = False
+
+
 
     def __init__(self, width=640, height=400, fps=30):
         """Initialize pygame, window, background, font,...
@@ -454,7 +494,7 @@ class Viewer(object):
                  len(self.backgroundfilenames)]))
         except:
             self.background = pygame.Surface(self.screen.get_size()).convert()
-            self.background.fill((255,255,255)) # fill background white
+            self.background.fill((0,0,0)) # fill background black
             
         self.background = pygame.transform.scale(self.background,
                           (Viewer.width,Viewer.height))
@@ -465,6 +505,7 @@ class Viewer(object):
         """painting on the surface and create sprites"""
         # --- sprites in the allgroup will be visible each frame ---
         self.allgroup =  pygame.sprite.LayeredUpdates() # for drawing
+        self.flytextgroup = pygame.sprite.Group()
         # --- additional groups for collision detection ----
         #self.crosshairgroup = pygame.sprite.Group()
 #        self.rocketgroup = pygame.sprite.Group()
@@ -474,7 +515,7 @@ class Viewer(object):
         
         # ---- assign sprite groups to the Sprite classes ----
         VectorSprite.groups = self.allgroup
-        Flytext.groups = self.allgroup
+        Flytext.groups = self.allgroup, self.flytextgroup
         #Crosshair.groups = self.allgroup, self.crosshairgroup
     #    Rocket.groups = self.allgroup, self.rocketgroup
      #   Spaceship.groups = self.allgroup, self.playergroup
@@ -495,12 +536,127 @@ class Viewer(object):
     def new_question(self):
         self.number = random.randint(1,self.maxnr)
         self.question = Game.frage[self.number]
-        
+    
+    def set_resolution(self):
+        if Viewer.fullscreen:
+            self.screen = pygame.display.set_mode((self.width, self.height), pygame.DOUBLEBUF|pygame.FULLSCREEN)
+        else:
+            self.screen = pygame.display.set_mode((self.width, self.height), pygame.DOUBLEBUF)
+            self.loadbackground()
+    
+    
+    def menu_run(self):
+        running = True
+        pygame.mouse.set_visible(False)
+        while running:
+            
+            #pygame.mixer.music.pause()
+            milliseconds = self.clock.tick(self.fps) #
+            seconds = milliseconds / 1000
+            
+            # -------- events ------
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    return -1 # running = False
+                # ------- pressed and released key ------
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        return -1 # running = False
+                    if event.key == pygame.K_UP:
+                        Viewer.cursor -= 1
+                        Viewer.cursor = max(0, Viewer.cursor) # not < 0
+                        #Viewer.menusound.play()
+                    if event.key == pygame.K_DOWN:
+                        Viewer.cursor += 1
+                        Viewer.cursor = min(len(Viewer.menu[Viewer.name])-1,Viewer.cursor) # not > menu entries
+                        #Viewer.menusound.play()
+                    if event.key == pygame.K_RETURN:
+                        text = Viewer.menu[Viewer.name][Viewer.cursor]
+                        if text == "quit":
+                            return -1
+                            Viewer.menucommandsound.play()
+                        elif text in Viewer.menu:
+                            # changing to another menu
+                            Viewer.history.append(text) 
+                            Viewer.name = text
+                            Viewer.cursor = 0
+                            #Viewer.menuselectsound.play()
+                        elif text == "resume":
+                            return
+                            #Viewer.menucommandsound.play()
+                            #pygame.mixer.music.unpause()
+                        elif text == "back":
+                            Viewer.history = Viewer.history[:-1] # remove last entry
+                            Viewer.cursor = 0
+                            Viewer.name = Viewer.history[-1] # get last entry
+                            #Viewer.menucommandsound.play()
+                            # direct action
+                        elif text == "credits":
+                            Flytext(x=700, y=400, text="by Bigm0 and BakTheBig", fontsize = 100)  
+
+                        if Viewer.name == "resolution":
+                            # text is something like 800x600
+                            t = text.find("x")
+                            if t != -1:
+                                x = int(text[:t])
+                                y = int(text[t+1:])
+                                Viewer.width = x
+                                Viewer.height = y
+                                self.set_resolution()
+                                #Viewer.menucommandsound.play()
+                                    
+                        if Viewer.name == "fullscreen":
+                            if text == "true":
+                                #Viewer.menucommandsound.play()
+                                Viewer.fullscreen = True
+                                self.set_resolution()
+                            elif text == "false":
+                                #Viewer.menucommandsound.play()
+                                Viewer.fullscreen = False
+                                self.set_resolution()
+                        
+            # ------delete everything on screen-------
+            self.screen.blit(self.background, (0, 0))
+            
+            
+         
+            # -------------- UPDATE all sprites -------             
+            self.flytextgroup.update(seconds)
+
+            # ----------- clear, draw , update, flip -----------------
+            self.allgroup.draw(self.screen)
+
+            # --- paint menu ----
+            # ---- name of active menu and history ---
+            write(self.screen, text="you are here:", x=200, y=50, color=(0,255,255))
+            
+            t = "main"
+            for nr, i in enumerate(Viewer.history[1:]):
+                #if nr > 0:
+                t+=(" > ")
+                t+=(i)
+                #
+            
+            #t+=Viewer.name
+            write(self.screen, text=t, x=200,y=70,color=(0,255,255))
+            # --- menu items ---
+            menu = Viewer.menu[Viewer.name]
+            for y, item in enumerate(menu):
+                write(self.screen, text=item, x=200, y=100+y*20, color=(255,255,255))
+            # --- cursor ---
+            write(self.screen, text="-->", x=100, y=100+ Viewer.cursor * 20, color=(255,255,255))
+                        
+                
+            # -------- next frame -------------
+            pygame.display.flip()
+        #----------------------------------------------------- 
+ 
         
    
     def run(self):
         """The mainloop"""
         running = True
+        self.menu_run()
         self.new_question()
         pygame.mouse.set_visible(False)
         oldleft, oldmiddle, oldright  = False, False, False
