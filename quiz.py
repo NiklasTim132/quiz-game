@@ -2,7 +2,7 @@
 author: Niklas REBEL
 email: niklas.rebel@gmail.com
 license: gpl, see http://www.gnu.org/licenses/gpl-3.0.de.html
-download: https://github.com/horstjens/feuerwerk/blob/master/vectortemplate2d.py
+download: https://github.com/niklastim132/quiz-game/master/quiz.py
 idea: clean python3/pygame template using pygame.math.vector2
 
 """
@@ -537,10 +537,10 @@ class Viewer(object):
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         running = False
-                    if event.key == pygame.K_n:
-                        Flytext(200,50, text="Niklas codet")
-                    if event.key == pygame.K_h:
-                        Flytext(Viewer.width//2,Viewer.height//2, text="Horst dreht durch!!!",color=(32,229,16), fontsize = random.randint(100,700))
+                    #if event.key == pygame.K_n:
+                    #    Flytext(200,50, text="Niklas codet")
+                    #if event.key == pygame.K_h:
+                    #    Flytext(Viewer.width//2,Viewer.height//2, text="Horst dreht durch!!!",color=(32,229,16), fontsize = random.randint(100,700))
                     
                     if event.key == pygame.K_SPACE:
                         self.new_question()
@@ -596,22 +596,6 @@ class Viewer(object):
                 
                 pygame.draw.rect(self.screen, (200,200,200), (50, 300+100*nr,w,h), 1)
                 
-                             
-            # ---- create random sprites -----
-        #    if random.random() < 0.003:
-         #       Bubble()
-            
-            #if random.random() < 0.01:
-            #    Star()
-                
-          #  if random.random() < 0.001:
-           #     Monster1()
-            
-          #  if random.random() < 0.001:
-           #     Monster2()
-            
-            # --- line from eck to mouse ---
-            #pygame.draw.line(self.screen, (random.randint(200,250),0,0), (self.player1.pos.x, -self.player1.pos.y), (self.mouse1.x, self.mouse1.y))
 
             # ------------ pressed keys ------
             pressed_keys = pygame.key.get_pressed()
@@ -660,24 +644,10 @@ class Viewer(object):
                 self.clock.get_fps()), x=10, y=10, color=(128,0,128))
             # --------- update all sprites --------
             self.allgroup.update(seconds)
-
             
             # ----------- clear, draw , update, flip -----------------
             self.allgroup.draw(self.screen)
 
-            # ----- movement indicators ---------
-            #self.movement_indicator(self.player1, (105,105))
-            #self.movement_indicator(self.player2, (1320, 105))
-            
-            # --- Martins verbesserter Crosshairtail -----
-            #for mouse in self.crosshairgroup:
-            #    if len(mouse.tail)>2:
-            #        for a in range(1,len(mouse.tail)):
-            #            r,g,b = mouse.color
-            #            pygame.draw.line(self.screen,(r-a,g,b),
-            #                         mouse.tail[a-1],
-            #                         mouse.tail[a],10-a*10//10)
-            
             # -------- next frame -------------
             pygame.display.flip()
         #-----------------------------------------------------
