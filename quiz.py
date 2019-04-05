@@ -383,32 +383,32 @@ class Viewer(object):
     height = 0
     images = {}
     sounds = {}
-    menu =  {"main":            ["resume", "settings", "credits", "quit" ],
+    menu =  {"main":           ["resume", "settings", "credits", "quit" ],
             #main
-            "settings":        ["back", "video", "difficulty", "reset all values"],
+            "settings":        ["back", "video", "reset all values"],
             #settings
-            "difficulty":      ["back", "powerups", "bosshealth", "playerhealth"],
+            #"difficulty":      ["back", "powerups", "bosshealth", "playerhealth"],
             "video":           ["back", "resolution", "fullscreen"],
             #difficulty
-            "bosshealth":      ["back", "1000", "2500", "5000", "10000"],
-            "playerhealth":    ["back", "100", "250", "500", "1000"],
-            "powerups":        ["back", "laser", "bonusrockets", "heal", "shield", "speed"],
+            #"bosshealth":      ["back", "1000", "2500", "5000", "10000"],
+            #"playerhealth":    ["back", "100", "250", "500", "1000"],
+            #"powerups":        ["back", "laser", "bonusrockets", "heal", "shield", "speed"],
             #powerups
-            "bonusrockets":    ["back", "bonusrocketincrease", "bonusrocket duration"],
-            "laser":           ["back", "laserdamage", "laser duration"],
-            "heal":            ["back", "heal effectiveness"],
-            "shield":          ["back", "bossrocket deflection", "shield duration"],
-            "speed":           ["back", "speed increase", "speed duration"],
+            #"bonusrockets":    ["back", "bonusrocketincrease", "bonusrocket duration"],
+            #"laser":           ["back", "laserdamage", "laser duration"],
+            #"heal":            ["back", "heal effectiveness"],
+            #"shield":          ["back", "bossrocket deflection", "shield duration"],
+            #"speed":           ["back", "speed increase", "speed duration"],
             #powerup effects
-            "bonusrocketincrease": ["back", "1", "2", "3", "5", "10"],
-            "bonusrocket duration": ["back", "10", "30", "60"],
-            "laserdamage":     ["back", "3", "5", "10"],
-            "laser duration": ["back", "10", "30", "60"],            
-            "heal effectiveness": ["back", "50", "100", "250", "full health"],
-            "bossrocket deflection": ["back", "true", "false"],
-            "shield duration": ["back", "10", "30", "60"],
-            "speed increase":  ["back", "3", "5", "10", "15"],
-            "speed duration":  ["back", "10", "30", "60"],
+            #"bonusrocketincrease": ["back", "1", "2", "3", "5", "10"],
+            #"bonusrocket duration": ["back", "10", "30", "60"],
+            #"laserdamage":     ["back", "3", "5", "10"],
+            #"laser duration": ["back", "10", "30", "60"],            
+            #"heal effectiveness": ["back", "50", "100", "250", "full health"],
+            #"bossrocket deflection": ["back", "true", "false"],
+            #"shield duration": ["back", "10", "30", "60"],
+            #"speed increase":  ["back", "3", "5", "10", "15"],
+            #"speed duration":  ["back", "10", "30", "60"],
             #video
             "resolution":      ["back", "720p", "1080p", "1440p", "4k"],
             "fullscreen":      ["back", "true", "false"]
@@ -628,7 +628,7 @@ class Viewer(object):
 
             # --- paint menu ----
             # ---- name of active menu and history ---
-            write(self.screen, text="you are here:", x=200, y=50, color=(0,255,255))
+            write(self.screen, text="You are here:", x=200, y=50, color=(0,255,255))
             
             t = "main"
             for nr, i in enumerate(Viewer.history[1:]):
