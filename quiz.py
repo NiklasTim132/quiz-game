@@ -3,7 +3,7 @@ author: Niklas REBEL
 email: niklas.rebel@gmail.com
 license: gpl, see http://www.gnu.org/licenses/gpl-3.0.de.html
 download: https://github.com/niklastim132/quiz-game/master/quiz.py
-idea: clean python3/pygame template using pygame.math.vector2
+idea: Create a little quiz for up to 4 joysticks/players.
 
 """
 import pygame
@@ -55,7 +55,7 @@ class Game():
         antwort[5] = ["365 Tage", "563 Tage", "635 Tage", "536 Tage", "653 Tage"]
         antwort[6] = ["Wenn keine Figur sich mehr bewegen kann, aber der König nicht im Schach steht und alle Ausweichfelder blockiert sind", "Wenn der König im Schach steht und alle Ausweichfelder bedroht sind", "Wenn die Dame bedroht wird und es für sie keine Ausweichfelder mehr gibt", "Keine der genannten Antworten"]
         antwort[7] = ["+44","+55","+66","+43"]
-        antwort[8] = ["Es kommentiert einen Befehl vorrübergehend aus","Es stoppt das Skript komplett","Es macht nichts","Es wird nicht in Python sondern in HTML verwendet"]
+        antwort[8] = ["Es kommentiert einen Befehl aus","Es stoppt das Skript komplett","Es macht nichts","Es wird nicht in Python sondern in HTML verwendet"]
         antwort[9] = ["Zahlungen","Das Ausleihen von Büchern","Programmen","Anrufe"]
         antwort[10] = ["WASD", "Pfeiltasten","HIJK","OLKÖ"]
         antwort[11] = ["4 Wörtern", "8 Wörtern", "12 Wörtern", "16 Wörtern"]
@@ -537,6 +537,30 @@ class Viewer(object):
         self.number = random.randint(1,self.maxnr)
         self.question = Game.frage[self.number]
     
+
+
+    def antwortschreiben(self):
+            
+            farben = [(0,255,0) , (255,0,0) , (255,165,0) , (0,0,255)  ]
+            
+            
+            reihung= [0,1,2,3]
+            random.shuffle(reihung)
+            for nr, char in enumerate(["(A)","(B)","(Y)","(X)"]):
+                bcolor = farben [nr]
+                print("nr", nr)
+                print("self.number", self.number)
+                rnr = reihung[nr]
+                print("game.antwort[self.number][rnr]:", Game.antwort[self.number][nr])
+                w, h = write(self.screen, Game.antwort[self.number][nr], 200, 300+100*nr, fontsize=50, color=bcolor)
+        
+                
+                w,h = write(self.screen, char, 50, 300+100*nr, fontsize=50, color=bcolor)
+                
+                pygame.draw.rect(self.screen, (200,200,200), (50, 300+100*nr,w,h), 1)
+                
+
+    
     def set_resolution(self):
         if Viewer.fullscreen:
             self.screen = pygame.display.set_mode((self.width, self.height), pygame.DOUBLEBUF|pygame.FULLSCREEN)
@@ -734,25 +758,13 @@ class Viewer(object):
              
             
             
-            farben = [(0,255,0) , (255,0,0) , (255,165,0) , (0,0,255)  ]
+            
+            
             
             # ---- antworten schreiben -----
-            reihung= [0,1,2,3]
-            random.shuffle(reihung)
-            for nr, char in enumerate(["(A)","(B)","(Y)","(X)"]):
-                bcolor = farben [nr]
-                print("nr", nr)
-                print("self.number", self.number)
-                rnr = reihung[nr]
-                print("game.antwort[self.number][rnr]:", Game.antwort[self.number][nr])
-                w, h = write(self.screen, Game.antwort[self.number][nr], 200, 300+100*nr, fontsize=50, color=bcolor)
-        
-                
-                w,h = write(self.screen, char, 50, 300+100*nr, fontsize=50, color=bcolor)
-                
-                pygame.draw.rect(self.screen, (200,200,200), (50, 300+100*nr,w,h), 1)
-                
-
+ 
+            self.antwortschreiben()        
+            
             # ------------ pressed keys ------
             pressed_keys = pygame.key.get_pressed()
             
