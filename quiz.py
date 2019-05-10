@@ -546,12 +546,12 @@ class Viewer(object):
 
     def antwortschreiben(self):
             
-            farben = [(0,255,0) , (255,0,0) , (255,165,0) , (0,0,255)  ]
+            farben = [(0,0,255), (0,255,0) , (255,0,0) , (255,165,0) ,   ]
             
             
             #reihung= [0,1,2,3]
             #random.shuffle(reihung)
-            for nr, char in enumerate(["(A)","(B)","(Y)","(X)"]):
+            for nr, char in enumerate(["(X)","(A)","(B)","(Y)"]):
                 bcolor = farben [nr]
                 #print("nr", nr)
                 #print("self.number", self.number)
@@ -810,17 +810,17 @@ class Viewer(object):
                        jpushed[number][b] = pushed
                        
                        if b == 0 and pushed and not joldpushed[number][b]:
-                           Flytext(100, 400,"X {}".format(number), color=(0,0,255),fontsize=200,acceleration_factor=1.2,duration=2.0)
+                           Flytext(500, 400,"X {} button {}".format(number, b), color=(0,0,255),fontsize=200,acceleration_factor=1.2,duration=2.0)
                            self.test_correct(b)
                        elif b == 1 and pushed and not joldpushed[number][b]:
-                           Flytext(200,400, "A {}".format(number),color=(17,206,19),fontsize=200,acceleration_factor=1.2,duration=2.0)
+                           Flytext(500,400, "A {} button {}".format(number, b),color=(17,206,19),fontsize=200,acceleration_factor=1.2,duration=2.0)
                            self.test_correct(b)
                        elif b == 2  and pushed and not joldpushed[number][b]:
-                           Flytext(300,400, "B {}".format(number),color=(255,0,0),fontsize=200,acceleration_factor=1.2,duration=2.0)
+                           Flytext(500,400, "B {} button {}".format(number, b),color=(255,0,0),fontsize=200,acceleration_factor=1.2,duration=2.0)
                            self.test_correct(b)
                        elif b == 3  and pushed and not joldpushed[number][b]:
                            
-                           Flytext(400,400, "Y {}".format(number),color=(255,165,0),fontsize=200,acceleration_factor=1.2,duration=2.0)
+                           Flytext(500,400, "Y {} button {}".format(number, b),color=(255,165,0),fontsize=200,acceleration_factor=1.2,duration=2.0)
                            self.test_correct(b) 
                             
                             
