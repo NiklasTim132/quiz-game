@@ -536,6 +536,11 @@ class Viewer(object):
     def new_question(self):
         self.number = random.randint(1,self.maxnr)
         self.question = Game.frage[self.number]
+        self.correct_answer = Game.antwort[self.number][0]
+        self.answers = Game.antwort[self.number]
+        random.shuffle(self.answers)
+        
+        
     
 
 
@@ -544,15 +549,15 @@ class Viewer(object):
             farben = [(0,255,0) , (255,0,0) , (255,165,0) , (0,0,255)  ]
             
             
-            reihung= [0,1,2,3]
-            random.shuffle(reihung)
+            #reihung= [0,1,2,3]
+            #random.shuffle(reihung)
             for nr, char in enumerate(["(A)","(B)","(Y)","(X)"]):
                 bcolor = farben [nr]
-                print("nr", nr)
-                print("self.number", self.number)
-                rnr = reihung[nr]
-                print("game.antwort[self.number][rnr]:", Game.antwort[self.number][nr])
-                w, h = write(self.screen, Game.antwort[self.number][nr], 200, 300+100*nr, fontsize=50, color=bcolor)
+                #print("nr", nr)
+                #print("self.number", self.number)
+                #rnr = reihung[nr]
+                #print("game.antwort[self.number][rnr]:", Game.antwort[self.number][nr])
+                w, h = write(self.screen, self.answers[nr], 200, 300+100*nr, fontsize=50, color=bcolor)
         
                 
                 w,h = write(self.screen, char, 50, 300+100*nr, fontsize=50, color=bcolor)
@@ -675,7 +680,13 @@ class Viewer(object):
             pygame.display.flip()
         #----------------------------------------------------- 
  
-        
+    def test_correct(self, number):
+            # number is joystick number 
+            if self.answers[number] == self.correct_answer:
+                Flytext(500,200, "Hurra")
+            else:
+                Flytext(500, 200, "Loooooooser")
+   
    
     def run(self):
         """The mainloop"""
@@ -781,6 +792,7 @@ class Viewer(object):
             #mouses = [self.mouse4, self.mouse5]
             for number, j in enumerate(self.joysticks):
                 # ====== number is di nummer des joysticks, oida! ====
+                # b is die button-number du Weh!
                 if number == 0 or number==1 or number==2 or number==3:
                    #x = j.get_axis(0)
                    #y = j.get_axis(1)
@@ -799,13 +811,19 @@ class Viewer(object):
                        
                        if b == 0 and pushed and not joldpushed[number][b]:
                            Flytext(100, 400,"X {}".format(number), color=(0,0,255),fontsize=200,acceleration_factor=1.2,duration=2.0)
+                           self.test_correct(b)
                        elif b == 1 and pushed and not joldpushed[number][b]:
                            Flytext(200,400, "A {}".format(number),color=(17,206,19),fontsize=200,acceleration_factor=1.2,duration=2.0)
+                           self.test_correct(b)
                        elif b == 2  and pushed and not joldpushed[number][b]:
                            Flytext(300,400, "B {}".format(number),color=(255,0,0),fontsize=200,acceleration_factor=1.2,duration=2.0)
+                           self.test_correct(b)
                        elif b == 3  and pushed and not joldpushed[number][b]:
+                           
                            Flytext(400,400, "Y {}".format(number),color=(255,165,0),fontsize=200,acceleration_factor=1.2,duration=2.0)
-                       
+                           self.test_correct(b) 
+                            
+                            
                        joldpushed[number][b] = jpushed[number][b]
             # write text below sprites
             write(self.screen, "FPS: {:8.3}".format(
