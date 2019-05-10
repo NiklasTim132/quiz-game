@@ -430,6 +430,11 @@ class Viewer(object):
         pygame.init()
         Viewer.width = width    # make global readable
         Viewer.height = height
+        self.deltatime = 10
+        self.nexttime = 0
+        self.blocked = [False, False, False, False]
+        self.points = [0,0,0,0]
+        self.playercolor = [(0,128,0), (128,0,128), (64,180,200), (200,200,0)] 
         self.screen = pygame.display.set_mode((self.width, self.height), pygame.DOUBLEBUF)
         self.background = pygame.Surface(self.screen.get_size()).convert()
         self.background.fill((64,64,64)) # fill background white
@@ -539,6 +544,8 @@ class Viewer(object):
         self.correct_answer = Game.antwort[self.number][0]
         self.answers = Game.antwort[self.number]
         random.shuffle(self.answers)
+        self.nexttime = self.playtime + self.deltatime
+        self.blocked = [False, False, False, False]
         
         
     
@@ -684,8 +691,10 @@ class Viewer(object):
             # number is joystick number 
             if self.answers[number] == self.correct_answer:
                 Flytext(500,200, "Hurra")
+                return True
             else:
                 Flytext(500, 200, "Loooooooser")
+                return False
    
    
     def run(self):
@@ -718,6 +727,12 @@ class Viewer(object):
             if gameOver:
                 if self.playtime > exittime:
                     break
+            # time for next question ? 
+            if self.playtime > self.nexttime:
+                Flytext(500,500, "Too slow , all of you!!!")
+                self.blocked=[True, True, True, True]
+                # Zeitverzögerung einbauen um den Flytext anzugucken, dann nächste question auslösen
+                self.new_question()
             #Game over?
             #if not gameOver:
             # -------- events ------
@@ -754,6 +769,38 @@ class Viewer(object):
    
             # ----- delete everything on screen --------
             self.screen.blit(self.background, (0, 0))
+            
+            # balken malen 
+            boxwidth = Viewer.width // 4
+            w = boxwidth -0
+            timeleft = self.nexttime - self.playtime # in sec
+                
+            for player in range(4):
+                
+                pygame.draw.rect(self.screen, (60,60,60), 
+                                 (boxwidth * player, 5, boxwidth, 30))
+                
+                # 100% timeleft == boxwidth
+                # 100% = self.deltatime = 17 sec
+                # timeleft = 5 sec... zb
+                # wenn timeleft == deltatime, dann w => boxwidth
+                # wenn timeleft == deltatime / 2 dann w => boxwidth / 2
+                # usw
+                
+                # niklas soll das tun
+                
+                # das ist fake * 7, niklas soll gescheite formel basteln
+                
+                if not self.blocked[player]:
+                      pygame.draw.rect(self.screen, self.playercolor[player], 
+                                 (boxwidth * player, 5, timeleft*7, 30))
+                else:
+                    # red cross
+                    pygame.draw.line(self.screen, (255,0,0), (boxwidth*player, 5), 
+                                     (boxwidth * player + boxwidth, 30))
+                
+                
+                
             
             # --- question schreiben ---
             # self question ist eine liste weil mehrzeilig
@@ -809,9 +856,15 @@ class Viewer(object):
                        #jpushed[number][b] = False # prinzipiell amal auf falsch setzen
                        jpushed[number][b] = pushed
                        
-                       if b == 0 and pushed and not joldpushed[number][b]:
+                       if not self.blocked[number] and b == 0 and pushed and not joldpushed[number][b]:
                            Flytext(500, 400,"X {} button {}".format(number, b), color=(0,0,255),fontsize=200,acceleration_factor=1.2,duration=2.0)
-                           self.test_correct(b)
+                           if self.test_correct(b):
+                               # alle anderen blocken 
+                               self.blocked = [True, True, True, True]
+                               #Flytext winner für player 0
+                           else:
+                               self.blocked[number] = True # self-block
+                               #Flytext looser für player 0
                        elif b == 1 and pushed and not joldpushed[number][b]:
                            Flytext(500,400, "A {} button {}".format(number, b),color=(17,206,19),fontsize=200,acceleration_factor=1.2,duration=2.0)
                            self.test_correct(b)
@@ -827,7 +880,7 @@ class Viewer(object):
                        joldpushed[number][b] = jpushed[number][b]
             # write text below sprites
             write(self.screen, "FPS: {:8.3}".format(
-                self.clock.get_fps()), x=10, y=10, color=(128,0,128))
+                self.clock.get_fps()), x=10, y=Viewer.height - 30, color=(255,255,128))
             # --------- update all sprites --------
             self.allgroup.update(seconds)
             
