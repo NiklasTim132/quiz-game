@@ -13,7 +13,7 @@ import time
 
 class Game():
     
-
+        
         # Anweisungen:
         anweisung0 = "----  Drücke schnell die entsprechende Taste!  ----"
         #anweisung1 = "STOP! Buzzer von Spieler 1 wurde am schnellsten aktiviert. Er darf jetzt Antworten!" 
@@ -52,8 +52,8 @@ class Game():
         antwort[2] = ["Bonjour", "bienvenuti", "Grüss Gott", "bon soir"]
         antwort[3] = ["15€", "30€", "45€", "5€", "150€"]
         antwort[4] = ["Nur in einem rechtwinkeligen Dreieck", "In jedem Dreieck", "Nur bei gleichschenkeligen Dreiecken", "Der Lehrsatz ist garnicht existent"]
-        antwort[5] = ["365 Tage", "563 Tage", "635 Tage", "536 Tage", "653 Tage"]
-        antwort[6] = ["Wenn keine Figur sich mehr bewegen kann, aber der König nicht im Schach steht und alle Ausweichfelder blockiert sind", "Wenn der König im Schach steht und alle Ausweichfelder bedroht sind", "Wenn die Dame bedroht wird und es für sie keine Ausweichfelder mehr gibt", "Keine der genannten Antworten"]
+        antwort[5] = ["365 Tage", "563 Tage", "635 Tage", "536 Tage"]
+        antwort[6] = ["Keine Figur kann sich mehr bewegen, König steht nicht im Schach", "Wenn die Dame bedroht wird und es für sie keine Ausweichfelder mehr gibt", "Wenn die Dame geschlagen wurde", "Keine der genannten Antworten"]
         antwort[7] = ["+44","+55","+66","+43"]
         antwort[8] = ["Es kommentiert einen Befehl aus","Es stoppt das Skript komplett","Es macht nichts","Es wird nicht in Python sondern in HTML verwendet"]
         antwort[9] = ["Zahlungen","Das Ausleihen von Büchern","Programmen","Anrufe"]
@@ -383,11 +383,11 @@ class Viewer(object):
     height = 0
     images = {}
     sounds = {}
-    menu =  {"main":           ["resume", "settings", "credits", "quit" ],
+    menu =  {"main":           ["resume", "difficulty","settings", "credits", "quit" ],
             #main
             "settings":        ["back", "video", "reset all values"],
             #settings
-            #"difficulty":      ["back", "powerups", "bosshealth", "playerhealth"],
+            "difficulty":      ["back", "increase time to answer questions", "decrease time to answer questions"],
             "video":           ["back", "resolution", "fullscreen"],
             #difficulty
             #"bosshealth":      ["back", "1000", "2500", "5000", "10000"],
@@ -426,6 +426,7 @@ class Viewer(object):
     def __init__(self, width=640, height=400, fps=30):
         """Initialize pygame, window, background, font,...
            default arguments """
+        #self.deltatime = 15
         pygame.mixer.pre_init(44100, -16, 1, 512)
         pygame.init()
         Viewer.width = width    # make global readable
@@ -564,10 +565,10 @@ class Viewer(object):
                 #print("self.number", self.number)
                 #rnr = reihung[nr]
                 #print("game.antwort[self.number][rnr]:", Game.antwort[self.number][nr])
-                w, h = write(self.screen, self.answers[nr], 200, 300+100*nr, fontsize=50, color=bcolor)
+                w, h = write(self.screen, self.answers[nr], 200, 300+100*nr, fontsize=40, color=bcolor)
         
                 
-                w,h = write(self.screen, char, 50, 300+100*nr, fontsize=50, color=bcolor)
+                w,h = write(self.screen, char, 50, 300+100*nr, fontsize=40, color=bcolor)
                 
                 pygame.draw.rect(self.screen, (200,200,200), (50, 300+100*nr,w,h), 1)
                 
@@ -610,7 +611,15 @@ class Viewer(object):
                         text = Viewer.menu[Viewer.name][Viewer.cursor]
                         if text == "quit":
                             return -1
-                            Viewer.menucommandsound.play()
+                            #Viewer.menucommandsound.play()
+                        elif text == "increase time to answer questions":
+                            pass
+                            self.deltatime +=1
+                            Flytext(x=200, y=200, text="Time sucessfully increased. Answer time is now {}".format(self.deltatime))
+                        elif text == "decrease time to answer questions":
+                            pass
+                            self.deltatime -=1
+                            Flytext(x=200, y=200, text="Time sucessfully decreased. Answer time is now{}".format(self.deltatime))
                         elif text in Viewer.menu:
                             # changing to another menu
                             Viewer.history.append(text) 
