@@ -637,7 +637,7 @@ class Viewer(object):
                             #Viewer.menucommandsound.play()
                             # direct action
                         elif text == "credits":
-                            Flytext(x=700, y=400, text="by Bigm0 and BakTheBig", fontsize = 100)  
+                            Flytext(x=700, y=400, text="Authors: Niklas Rebel and Horst Jens, 2019. Testing: Yannik Minichbauer. For more projects please visit https://www.spielend-programmieren.at ", fontsize = 28)  
 
                         if Viewer.name == "resolution":
                             # text is something like 800x600
