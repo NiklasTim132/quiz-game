@@ -62,7 +62,7 @@ class Game():
         antwort[12] = ["William Shakespear", "Walter Shakespear", "Werner Shakespear", "Willhelm Shakespear"]
         antwort[13] = ["Fett", "Kursiv", "Unterstrichen", "Durchgestrichen"]
         antwort[14] = ["Werwolf-Attacke", "Monsterball ist überall", "Waka Waka", "La La La"]
-        antwort[15] = ["X = 10", "X = -10", "X = 20", "X = 0", "X = -20"]
+        antwort[15] = ["X = 10", "X = -10", "X = 20", "X = 0"]
 
 def cleanbyte(number):
     """makes sure the entered number is in the range of 0-255 and returns an integer in this range"""
@@ -435,7 +435,7 @@ class Viewer(object):
         self.nexttime = 0
         self.blocked = [False, False, False, False]
         self.points = [0,0,0,0]
-        self.playercolor = [(0,128,0), (128,0,128), (64,180,200), (200,200,0)] 
+        self.playercolor = [(0,128,0), (250,0,250), (64,180,200), (200,200,0)] 
         self.screen = pygame.display.set_mode((self.width, self.height), pygame.DOUBLEBUF)
         self.background = pygame.Surface(self.screen.get_size()).convert()
         self.background.fill((64,64,64)) # fill background white
@@ -705,7 +705,16 @@ class Viewer(object):
                 Flytext(500, 200, "Loooooooser")
                 return False
    
-   
+    def block_other_players(self, b, number):
+        if self.test_correct(b):
+           # alle anderen blocken 
+           self.blocked = [True, True, True, True]
+           self.points[number] += 1
+           #Flytext winner für player 0
+        else:
+           self.blocked[number] = True # self-block
+           #Flytext looser für player 0
+
     def run(self):
         """The mainloop"""
         running = True
@@ -751,7 +760,7 @@ class Viewer(object):
                 # ------- pressed and released key ------
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
-                        running = False
+                        self.menu_run()
                     #if event.key == pygame.K_n:
                     #    Flytext(200,50, text="Niklas codet")
                     #if event.key == pygame.K_h:
@@ -789,16 +798,10 @@ class Viewer(object):
                 pygame.draw.rect(self.screen, (60,60,60), 
                                  (boxwidth * player, 5, boxwidth, 30))
                 
-                # 100% timeleft == boxwidth
-                # 100% = self.deltatime = 17 sec
-                # timeleft = 5 sec... zb
-                # wenn timeleft == deltatime, dann w => boxwidth
-                # wenn timeleft == deltatime / 2 dann w => boxwidth / 2
-                # usw
+                # text malen
                 
-                # niklas soll das tun
+                write(self.screen, text="Player {}: {}".format(player, self.points[player]), x=boxwidth // 2 + boxwidth * player, y=55, color=(self.playercolor[player]), center = True)
                 
-                # das ist fake * 7, niklas soll gescheite formel basteln
                 
                 if not self.blocked[player]:
                       pygame.draw.rect(self.screen, self.playercolor[player], 
@@ -816,12 +819,12 @@ class Viewer(object):
             # deshalb, stück für stück abarbeiten
             wt, ht = 0, 0
             for y, q in enumerate(self.question):
-                 w, h =write(self.screen, q, Viewer.width // 2, 100+y*30, fontsize=30, color=(255,255,255),center=True)
+                 w, h =write(self.screen, q, Viewer.width // 2, 150+y*30, fontsize=30, color=(255,255,255),center=True)
                  if w > wt:
                      wt = w
             
             #pygame.draw.rect( self.screen, (255,255,255), (Viewer.width // 2 - wt//2 - 5, 100+ y*30 -5, wt + 10, y*30+10), 1)
-            pygame.draw.rect( self.screen, (255,255,255), (15, 80, Viewer.width - 30,  y*30 +50), 1)
+            pygame.draw.rect( self.screen, (255,255,255), (15, 130, Viewer.width - 30,  y*30 +50), 1)
              
             
             
@@ -867,23 +870,17 @@ class Viewer(object):
                        
                        if not self.blocked[number] and b == 0 and pushed and not joldpushed[number][b]:
                            Flytext(500, 400,"X {} button {}".format(number, b), color=(0,0,255),fontsize=200,acceleration_factor=1.2,duration=2.0)
-                           if self.test_correct(b):
-                               # alle anderen blocken 
-                               self.blocked = [True, True, True, True]
-                               #Flytext winner für player 0
-                           else:
-                               self.blocked[number] = True # self-block
-                               #Flytext looser für player 0
-                       elif b == 1 and pushed and not joldpushed[number][b]:
+                           self.block_other_players(b, number)
+                       elif not self.blocked[number] and b == 1 and pushed and not joldpushed[number][b]:
                            Flytext(500,400, "A {} button {}".format(number, b),color=(17,206,19),fontsize=200,acceleration_factor=1.2,duration=2.0)
-                           self.test_correct(b)
-                       elif b == 2  and pushed and not joldpushed[number][b]:
+                           self.block_other_players(b, number)
+                       elif not self.blocked[number] and b == 2 and pushed and not joldpushed[number][b]:
                            Flytext(500,400, "B {} button {}".format(number, b),color=(255,0,0),fontsize=200,acceleration_factor=1.2,duration=2.0)
-                           self.test_correct(b)
-                       elif b == 3  and pushed and not joldpushed[number][b]:
+                           self.block_other_players(b, number)
+                       elif not self.blocked[number] and b == 3 and pushed and not joldpushed[number][b]:
                            
                            Flytext(500,400, "Y {} button {}".format(number, b),color=(255,165,0),fontsize=200,acceleration_factor=1.2,duration=2.0)
-                           self.test_correct(b) 
+                           self.block_other_players(b, number)
                             
                             
                        joldpushed[number][b] = jpushed[number][b]
